@@ -37,3 +37,19 @@ app.get('/employees', async (req, res) => {
 });
 
 // TO CREATE DATA
+app.post('/employees', async(req, res) => {
+    const {name, date_birth, email, job_title} = req.body;
+
+    try {
+        const conn = await oracledb.getConnection(dbConfig);
+        await conn.execute(
+            `INSERT INTO EMPLOYEES (name, date_birth, email, job_title) VALUES (:1, :2, :3, :4)`,
+            [name, date_birth, email, job_title],
+            { autoCommit: true }
+        );
+        res.sendStatus(201);
+        await conn.close();
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
